@@ -14,15 +14,19 @@ proc containsOrIncl*[T](self: var Graph[T], value: T): bool =
   self.nodes.containsOrIncl(value)
 
 #
-proc add_edge*[T](self: var Graph[T], fr, to: T) =
+proc add_edge[T](self: var Graph[T], fr, to: T) =
   self.incoming.mgetOrPut(fr, initHashSet[T]()).incl(to)
   self.outgoing.mgetOrPut(to, initHashSet[T]()).incl(fr)
 
 #
+proc add_edges*[T](self: var Graph[T], edges: varargs[(T, T)]) =
+  for edge in edges:
+    self.add_edge(edge[0], edge[1])
+
+#
 iterator parents*[T](self: Graph[T], t: T): T =
   if self.incoming.hasKey(t):
-    let s: HashSet[T] = self.incoming[t]
-    for i in s.items:
+    for i in self.incoming[t]:
       yield i
 
 #
